@@ -16,7 +16,7 @@
 (defroutes app
   (GET "/" request
        (html
-        [:h1 "Hello World"]
+        [:h1 "Signup"]
         [:form {:action "/post" :method "POST"}
          (field :input "Full Name" "fullname")
          (field :input "Email" "email")
@@ -24,6 +24,7 @@
          (field :password "Password" "password")
          (field :password "Confirm Password" "confirm-password")
          [:input {:type "submit"}]]))
+
   (POST "/post" request
         (swap! users conj (:params request))
         (let [flash "User Created."]
