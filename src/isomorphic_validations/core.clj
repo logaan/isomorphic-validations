@@ -4,7 +4,9 @@
             [hiccup.core :refer [html]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.pprint :refer [pprint]]
-            [ring.util.anti-forgery :refer [anti-forgery-field]]))
+            [ring.util.anti-forgery :refer [anti-forgery-field]]
+            [vlad.core :refer :all]
+            [isomorphic-validations.validations :refer :all]))
 
 (defn field [type label name]
   [:p
@@ -13,6 +15,9 @@
 
 (defonce users
   (atom []))
+
+(defn inspect [data]
+  (with-out-str (pprint data)))
 
 (defroutes app
   (GET "/" request
@@ -29,14 +34,21 @@
          [:input {:type "submit"}]]))
 
   (POST "/post" request
-        (swap! users conj (:params request))
-        (let [flash "User Created."]
-        (html
-         [:h1 "Users"]
-         [:h3 flash]
-         [:ol
-          (for [user @users]
-          [:li [:pre (with-out-str (pprint user))]])]))))
+        (let [user (:params request)
+              errors (-> (validate validations user)
+                         (assign-name field-names)
+                         (translate-errors english-translation))
+              flash (if (empty? errors)
+                      (do (swap! users conj user)
+                          "User Created.")
+                      "User Invalid.")]
+          (html
+           [:h1 "Users"]
+           [:h3 flash]
+           [:pre (inspect errors)]
+           [:ol
+            (for [user @users]
+              [:li [:pre (inspect user)]])]))))
 
 (def site
   (wrap-defaults app site-defaults))
