@@ -11,7 +11,7 @@
                  [org.clojure/clojurescript "0.0-3308"]]
   :plugins [[lein-cljsbuild "1.0.6"]]
   :cljsbuild {:builds {:test {:source-paths ["src" "test"]
-                              :notify-command ["phantomjs" "resources/test/test.js"]
-                              :compiler {:output-to "resources/test/compiled.js"
+                              :notify-command ["phantomjs" "resources/public/test.js"]
+                              :compiler {:output-to "resources/public/compiled.js"
                                          :optimizations :whitespace
                                          :pretty-print true}}}})

@@ -2,7 +2,7 @@
   (:require [compojure.core :refer :all]
             [org.httpkit.server :refer [run-server]]
             [hiccup.core :refer [html]]
-            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.pprint :refer [pprint]]))
 
 (defn field [type label name]
@@ -16,6 +16,7 @@
 (defroutes app
   (GET "/" request
        (html
+        [:script {:src "compiled.js"}]
         [:h1 "Signup"]
         [:form {:action "/post" :method "POST"}
          (field :input "Full Name" "fullname")
@@ -36,7 +37,7 @@
           [:li [:pre (with-out-str (pprint user))]])]))))
 
 (def site
-  (wrap-defaults app api-defaults))
+  (wrap-defaults app site-defaults))
 
 ; Testing junk
 
