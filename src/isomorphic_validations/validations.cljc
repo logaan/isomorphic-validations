@@ -3,10 +3,10 @@
 
 (def validations
   (join (attr [:fullname] (present))
-        (attr [:email] (present))
+        (attr [:email] (join (present)
+                             (matches #".*@.*")))
         (attr [:username] (present))
         (attr [:password] (present))
-        (attr [:confirm-password] (present))
         (equals-field [:password] [:confirm-password])))
 
 (def field-names
@@ -15,4 +15,3 @@
    [:username] "Username"
    [:password] "Password"
    [:confirm-password] "Confirm Password"})
-
