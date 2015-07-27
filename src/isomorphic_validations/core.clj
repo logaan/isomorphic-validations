@@ -3,7 +3,8 @@
             [org.httpkit.server :refer [run-server]]
             [hiccup.core :refer [html]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]]
+            [ring.util.anti-forgery :refer [anti-forgery-field]]))
 
 (defn field [type label name]
   [:p
@@ -19,6 +20,7 @@
         [:script {:src "compiled.js"}]
         [:h1 "Signup"]
         [:form {:action "/post" :method "POST"}
+         (anti-forgery-field)
          (field :input "Full Name" "fullname")
          (field :input "Email" "email")
          (field :input "Desired Username" "username")
