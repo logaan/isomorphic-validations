@@ -5,13 +5,15 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.pprint :refer [pprint]]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
-            [vlad.core :refer :all]
             [isomorphic-validations.validations :refer :all]))
 
-(defn field [type label name]
+(defn field [errors type label name]
   [:p
    [:label label ":" [:br]
-    [:input {:type type :name name}]]])
+    [:input {:type type :name name :id name}]]
+   (for [error (errors [name])]
+     [:p {:style "color: red;"}
+      error])])
 
 (defonce users
   (atom []))
@@ -19,36 +21,34 @@
 (defn inspect [data]
   (with-out-str (pprint data)))
 
+(defn form [errors]
+  (html
+    [:h1 "Signup"]
+    [:form {:action "/post" :method "POST" :id "signup"}
+     (anti-forgery-field)
+     (field errors :input "Full Name" :fullname)
+     (field errors :input "Email" :email)
+     (field errors :input "Desired Username" :username)
+     (field errors :password "Password" :password)
+     (field errors :password "Confirm Password" :confirm-password)
+     [:input {:type "submit"}]]
+    [:script {:src "compiled.js"}]))
+
 (defroutes app
   (GET "/" request
-       (html
-        [:script {:src "compiled.js"}]
-        [:h1 "Signup"]
-        [:form {:action "/post" :method "POST"}
-         (anti-forgery-field)
-         (field :input "Full Name" "fullname")
-         (field :input "Email" "email")
-         (field :input "Desired Username" "username")
-         (field :password "Password" "password")
-         (field :password "Confirm Password" "confirm-password")
-         [:input {:type "submit"}]]))
-
+       (form {}))
   (POST "/post" request
         (let [user (:params request)
-              errors (-> (validate validations user)
-                         (assign-name field-names)
-                         (translate-errors english-translation))
-              flash (if (empty? errors)
-                      (do (swap! users conj user)
-                          "User Created.")
-                      "User Invalid.")]
-          (html
-           [:h1 "Users"]
-           [:h3 flash]
-           [:pre (inspect errors)]
-           [:ol
-            (for [user @users]
-              [:li [:pre (inspect user)]])]))))
+              errors (user-errors user)]
+          (if (empty? errors)
+            (do (swap! users conj user)
+                (html
+                 [:h1 "Users"]
+                 [:h3 "User Created."]
+                 [:ol
+                  (for [user @users]
+                    [:li [:pre (inspect user)]])]))
+            (form errors)))))
 
 (def site
   (wrap-defaults app site-defaults))

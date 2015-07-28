@@ -11,3 +11,4 @@ pom.xml.asc
 .hg/
 resources/test/compiled.js
 /resources/public/compiled.js
+*.~undo-tree~

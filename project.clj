@@ -12,7 +12,6 @@
                  [vlad "3.1.0"]]
   :plugins [[lein-cljsbuild "1.0.6"]]
   :cljsbuild {:builds {:test {:source-paths ["src" "test"]
-                              :notify-command ["phantomjs" "resources/public/test.js"]
                               :compiler {:output-to "resources/public/compiled.js"
                                          :optimizations :whitespace
                                          :pretty-print true}}}})
