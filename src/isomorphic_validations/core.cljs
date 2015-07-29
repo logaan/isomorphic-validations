@@ -1,9 +1,8 @@
 (ns isomorphic-validations.core
-  (:require [isomorphic-validations.validations :refer [user-errors]]
-            [vlad.core :refer [validate]]
-            [cljs.pprint :refer [pprint]]))
+  (:require [isomorphic-validations.validations :refer [field-errors]]))
 
-(enable-console-print!)
+(def validate-clientside?
+  (atom true))
 
 (defn append-error [field-name text]
   (let [node (aget (js/document.getElementById field-name) "parentElement")
@@ -13,16 +12,18 @@
     (.appendChild node error)))
 
 (defn validate-form []
-  (let [user {:fullname (aget (js/document.getElementById "fullname") "value")
-              :email (aget (js/document.getElementById "email") "value")
-              :username (aget (js/document.getElementById "username") "value")
-              :password (aget (js/document.getElementById "password") "value")
-              :confirm-password (aget (js/document.getElementById "confirm-password") "value")}]
-    (doall
-     (for [[field errors] (user-errors user)
-           error errors]
-       (append-error (name (first field)) error)))
-    false))
+  (if @validate-clientside?
+    (let [user {:full-name        (aget (js/document.getElementById "full-name") "value")
+                :email            (aget (js/document.getElementById "email") "value")
+                :username         (aget (js/document.getElementById "username") "value")
+                :password         (aget (js/document.getElementById "password") "value")
+                :confirm-password (aget (js/document.getElementById "confirm-password") "value")}]
+     (doall
+      (for [[field errors] (field-errors user)
+            error errors]
+        (append-error (name (first field)) error)))
+     (reset! validate-clientside? false)
+     false)))
 
 (aset (js/document.getElementById "signup") "onsubmit" validate-form)
 

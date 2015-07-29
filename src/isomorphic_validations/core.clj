@@ -26,7 +26,7 @@
     [:h1 "Signup"]
     [:form {:action "/post" :method "POST" :id "signup"}
      (anti-forgery-field)
-     (field errors :input "Full Name" :fullname)
+     (field errors :input "Full Name" :full-name)
      (field errors :input "Email" :email)
      (field errors :input "Desired Username" :username)
      (field errors :password "Password" :password)
@@ -39,7 +39,7 @@
        (form {}))
   (POST "/post" request
         (let [user (:params request)
-              errors (user-errors user)]
+              errors (field-errors user)]
           (if (empty? errors)
             (do (swap! users conj user)
                 (html

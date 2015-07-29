@@ -1,22 +1,17 @@
 (ns isomorphic-validations.validations
   (:require [vlad.core :refer [join attr present matches equals-field
-                               validate assign-name translate-errors english-translation]]))
+                               validate guess-field-names translate-errors
+                               english-translation]]))
 
 (def validations
-  (join (attr [:fullname] (present))
-        (attr [:email]  (present))
+  (join (attr [:full-name] (present))
+        (attr [:email]    (present))
         (attr [:username] (present))
         (attr [:password] (present))
         (equals-field [:password] [:confirm-password])))
 
-(def field-names
-  {[:fullname] "Full Name"
-   [:email]    "Email"
-   [:username] "Username"
-   [:password] "Password"
-   [:confirm-password] "Confirm Password"})
-
-(defn user-errors [user]
+; Should be in vlad
+(defn field-errors [user]
   (-> (validate validations user)
-      (assign-name field-names)
+      (guess-field-names)
       (translate-errors english-translation)))
