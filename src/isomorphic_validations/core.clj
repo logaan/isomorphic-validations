@@ -5,7 +5,8 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.pprint :refer [pprint]]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
-            [isomorphic-validations.validations :refer :all]))
+            [vlad.core :refer [field-errors]]
+            [isomorphic-validations.validations :refer [validations]]))
 
 (defn field [errors type label name]
   [:p
@@ -39,7 +40,7 @@
        (form {}))
   (POST "/post" request
         (let [user (:params request)
-              errors (field-errors user)]
+              errors (field-errors validations user)]
           (if (empty? errors)
             (do (swap! users conj user)
                 (html

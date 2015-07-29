@@ -1,5 +1,6 @@
 (ns isomorphic-validations.core
-  (:require [isomorphic-validations.validations :refer [field-errors]]))
+  (:require [vlad.core :refer [field-errors]]
+            [isomorphic-validations.validations :refer [validations]]))
 
 (def validate-clientside?
   (atom true))
@@ -19,7 +20,7 @@
                 :password         (aget (js/document.getElementById "password") "value")
                 :confirm-password (aget (js/document.getElementById "confirm-password") "value")}]
      (doall
-      (for [[field errors] (field-errors user)
+      (for [[field errors] (field-errors validations user)
             error errors]
         (append-error (name (first field)) error)))
      (reset! validate-clientside? false)
