@@ -9,7 +9,8 @@
                  [hiccup "1.0.5"]
                  [ring/ring-defaults "0.1.5"]
                  [org.clojure/clojurescript "0.0-3308"]
-                 [vlad "3.3.0"]]
+                 [vlad "3.3.0"]
+                 [reagent "0.5.0"]]
   :plugins [[lein-cljsbuild "1.0.6"]]
   :cljsbuild {:builds {:test {:source-paths ["src" "test"]
                               :compiler {:output-to "resources/public/compiled.js"

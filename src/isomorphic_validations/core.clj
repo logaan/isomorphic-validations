@@ -4,17 +4,9 @@
             [hiccup.core :refer [html]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.pprint :refer [pprint]]
-            [ring.util.anti-forgery :refer [anti-forgery-field]]
             [vlad.core :refer [field-errors]]
-            [isomorphic-validations.validations :refer [validations]]))
-
-(defn field [errors type label name]
-  [:p
-   [:label label ":" [:br]
-    [:input {:type type :name name :id name}]]
-   (for [error (errors [name])]
-     [:p {:style "color: red;"}
-      error])])
+            [isomorphic-validations.validations :refer [validations]]
+            [isomorphic-validations.templates :refer [form]]))
 
 (defonce users
   (atom []))
@@ -22,39 +14,30 @@
 (defn inspect [data]
   (with-out-str (pprint data)))
 
-(defn form [errors]
-  (html
-    [:h1 "Signup"]
-    [:form {:action "/post" :method "POST" :id "signup"}
-     (anti-forgery-field)
-     (field errors :input "Full Name" :full-name)
-     (field errors :input "Email" :email)
-     (field errors :input "Desired Username" :username)
-     (field errors :password "Password" :password)
-     (field errors :password "Confirm Password" :confirm-password)
-     [:input {:type "submit"}]]
-    [:script {:src "compiled.js"}]))
+(defn user-listing [users]
+  (list
+   [:h1 "Users"]
+   [:h3 "User Created."]
+   [:ol
+    (for [user users]
+      [:li [:pre (inspect user)]])]))
 
 (defroutes app
   (GET "/" request
-       (form {}))
+       (html (form {})))
   (POST "/post" request
         (let [user (:params request)
               errors (field-errors validations user)]
-          (if (empty? errors)
-            (do (swap! users conj user)
-                (html
-                 [:h1 "Users"]
-                 [:h3 "User Created."]
-                 [:ol
-                  (for [user @users]
-                    [:li [:pre (inspect user)]])]))
-            (form errors)))))
+          (html
+           (if (empty? errors)
+             (do (swap! users conj user)
+                 (user-listing @users))
+             (form errors))))))
 
 (def site
-  (wrap-defaults app site-defaults))
+  (wrap-defaults app (assoc-in site-defaults [:security :anti-forgery] false)))
 
-; Testing junk
+                                        ; Testing junk
 
 (defonce server
   (atom nil))
@@ -74,5 +57,6 @@
   (start-server)
 
   (restart-server)
+
 
   )
