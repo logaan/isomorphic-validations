@@ -5,8 +5,8 @@ them from both Clojure and Clojurescript code.
 
 ## Usage
 
-   lein repl
-   user> (start-server)
+    lein repl
+    user> (start-server)
 
 ## License
 
