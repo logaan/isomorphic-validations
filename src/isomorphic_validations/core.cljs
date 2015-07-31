@@ -2,12 +2,12 @@
   (:require [vlad.core :refer [field-errors]]
             [isomorphic-validations.validations :refer [validations]]
             [isomorphic-validations.templates :refer [form]]
-            [reagent.core :as reagent :refer [atom]]
+            [reagent.core :as reagent]
             [goog.dom :as dom]
             [goog.dom.forms :as forms]))
 
 (def errors
-  (atom {}))
+  (reagent/atom {}))
 
 (defn form-data [form-id]
   (let [fields-to-arrays (.toObject (forms/getFormDataMap (dom/getElement form-id)))]

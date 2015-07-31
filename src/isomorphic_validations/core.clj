@@ -1,6 +1,5 @@
 (ns isomorphic-validations.core
   (:require [compojure.core :refer :all]
-            [org.httpkit.server :refer [run-server]]
             [hiccup.core :refer [html]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.pprint :refer [pprint]]
@@ -11,16 +10,12 @@
 (defonce users
   (atom []))
 
-(defn inspect [data]
-  (with-out-str (pprint data)))
-
 (defn user-listing [users]
   (list
    [:h1 "Users"]
    [:h3 "User Created."]
-   [:ol
-    (for [user users]
-      [:li [:pre (inspect user)]])]))
+   [:ol (for [user users]
+          [:li (:username user)])]))
 
 (defroutes app
   (GET "/" request
@@ -36,27 +31,3 @@
 
 (def site
   (wrap-defaults app (assoc-in site-defaults [:security :anti-forgery] false)))
-
-                                        ; Testing junk
-
-(defonce server
-  (atom nil))
-
-(defn start-server []
-  (reset! server (run-server #'site {:port 8080})))
-
-(defn stop-server []
-  (@server))
-
-(defn restart-server []
-  (stop-server)
-  (start-server))
-
-(comment
-
-  (start-server)
-
-  (restart-server)
-
-
-  )
