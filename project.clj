@@ -12,7 +12,7 @@
                  [vlad "3.3.0"]
                  [reagent "0.5.0"]]
   :plugins [[lein-cljsbuild "1.0.6"]]
-  :cljsbuild {:builds {:test {:source-paths ["src" "test"]
+  :cljsbuild {:builds {:test {:source-paths ["src"]
                               :compiler {:output-to "resources/public/compiled.js"
                                          :optimizations :whitespace
                                          :pretty-print true}}}})
